@@ -1,0 +1,17 @@
+NIM / Nama    : 4222411014 / Yasin Aprian
+Waktu         : 2026-10-26 09:17:56
+Komputer      : 16c1dde243eb | Linux-6.6.122+-x86_64-with-glibc2.39 | ultralytics 8.4.189
+Dataset       : /content/data_gabungan.yaml  (sidik jari label: c155653c2c4f, 4511 gambar, 4511 file label)
+Pengaturan    : epochs=30 imgsz(E1,E2)=416 batch=16 seed=0 E3 ubah imgsz=640
+
+Eksperimen     Perubahan     mAP50  mAP50-95      P      R     ms  menit
+E1_pretrained  -             0.824     0.491  0.863  0.760    2.4   29.9
+E2_scratch     -             0.627     0.338  0.746  0.570    2.0   29.7
+E3_tuning      imgsz=640     0.819     0.504  0.879  0.744    4.6   39.9
+
+Model terpilih (mAP50-95 val tertinggi): E3_tuning
+Hasil di data TEST (sekali saja)       : mAP50=0.995 mAP50-95=0.796 P=1.000 R=1.000 (22.7 ms/gambar)
+Per kelas di data TEST:
+  mask       P=1.000 R=1.000 mAP50=0.995 mAP50-95=0.864
+  glasses    P=1.000 R=1.000 mAP50=0.995 mAP50-95=0.729
+  (tidak ada contoh di data test: gloves)

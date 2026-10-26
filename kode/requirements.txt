@@ -1,0 +1,3 @@
+ultralytics
+lapx
+# Di Raspberry Pi OS, opencv & picamera2 sebaiknya dari apt (lihat README), bukan pip.

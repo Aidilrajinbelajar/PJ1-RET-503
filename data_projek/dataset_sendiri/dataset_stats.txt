@@ -1,0 +1,14 @@
+Dataset: C:\Users\DELL\OneDrive\Desktop\ALL ABOUT PBLL\PBL BUK NAURA IOT NEW\dataset_sendiri
+Total foto: 200 (milikmu 200, publik 0)   (seed 42)
+
+split    foto  negatif      mask   glasses    gloves
+----------------------------------------------------
+train     140       35        70        70         0
+val        40       10        20        20         0
+test       20        5        10        10         0
+total     200       50       100       100         0
+
+PERINGATAN:
+  - kelas 'gloves' tidak punya satu pun kotak label
+  - kelas 'gloves' tidak ada di split val (tambah foto atau ganti --seed)
+  - kelas 'gloves' tidak ada di split test (tambah foto atau ganti --seed)
