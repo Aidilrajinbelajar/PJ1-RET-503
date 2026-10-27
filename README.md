@@ -1,4 +1,4 @@
-#  Pj1 — Sistem Persepsi K3/APD
+# Pj1 — Sistem Persepsi K3/APD
 
 **Deteksi masker, kacamata, dan sarung tangan dari kamera dengan YOLO**
 
@@ -8,21 +8,21 @@ Sistem ini memeriksa apakah seseorang memakai **masker (`mask`)**, **kacamata (`
 
 ---
 
-##  Daftar Isi
+## Daftar Isi
 
-1. [Ringkasan Hasil](#-ringkasan-hasil)
-2. [Isi Repositori](#-isi-repositori)
-3. [Lingkup Persepsi dan Pipeline](#1-lingkup-persepsi-dan-pipeline)
-4. [Data](#2-data-tahap-12)
-5. [Eksperimen](#3-eksperimen-tahap-3)
-6. [Pemilihan Model dan Hasil Test](#4-pemilihan-model-dan-hasil-test-tahap-45)
-7. [Analisis](#5-analisis-tahap-6)
-8. [Uji di Raspberry Pi](#6-uji-di-raspberry-pi)
-9. [Cara Menjalankan Ulang](#7-cara-menjalankan-ulang)
+1. [Ringkasan Hasil](#1-ringkasan-hasil)
+2. [Isi Repositori](#2-isi-repositori)
+3. [Lingkup Persepsi dan Pipeline](#3-lingkup-persepsi-dan-pipeline)
+4. [Data (Tahap 1–2)](#4-data-tahap-12)
+5. [Eksperimen (Tahap 3)](#5-eksperimen-tahap-3)
+6. [Pemilihan Model dan Hasil Test (Tahap 4–5)](#6-pemilihan-model-dan-hasil-test-tahap-45)
+7. [Analisis (Tahap 6)](#7-analisis-tahap-6)
+8. [Pengembangan Lanjutan](#8-pengembangan-lanjutan)
+9. [Cara Menjalankan Ulang](#9-cara-menjalankan-ulang)
 
 ---
 
-##  Ringkasan Hasil
+## 1. Ringkasan Hasil
 
 | Indikator | Nilai | Keterangan |
 |-----------|-------|------------|
@@ -33,26 +33,25 @@ Sistem ini memeriksa apakah seseorang memakai **masker (`mask`)**, **kacamata (`
 | Manfaat transfer learning | **+0.153** mAP50-95 (E1 0.491 vs E2 0.338) | Bobot COCO sangat membantu |
 | Biaya `imgsz` 640 | **±1,9× lebih lambat** (4.6 ms vs 2.4 ms di T4) | Untuk selisih mAP50-95 hanya 0.013 |
 
->  **Catatan penting:** angka test sangat tinggi karena datanya kecil dan berasal dari sesi kamera yang sama dengan data latih. Gunakan angka **val** sebagai acuan kinerja umum.
+> **Catatan:** angka test sangat tinggi karena datanya kecil dan berasal dari sesi kamera yang sama dengan data latih. Gunakan angka **val** sebagai acuan kinerja umum.
 
 ---
 
-##  Isi Repositori
+## 2. Isi Repositori
 
 | Tahap | Yang dikumpulkan | Lokasi |
 |-------|------------------|--------|
-| 1–2 | Data projek mahasiswa | `data_projek/` (foto webcam sendiri, label YOLO, `data.yaml`, statistik) dan bagian [Data](#2-data-tahap-12) |
+| 1–2 | Data projek mahasiswa | `data_projek/` (foto webcam sendiri, label YOLO, `data.yaml`, statistik) dan bagian [Data](#4-data-tahap-12) |
 | 3 | Hasil E1 dan E3, `results.png` kedua eksperimen | `hasil/E1_pretrained/`, `hasil/E3_tuning/` (E2 di `hasil/E2_scratch/`) |
 | 4–6 | `hasil_praktik_Cluster 7.txt/.csv`, analisis, hasil test | `hasil_praktik_Cluster 7.txt`, `.csv`, dan README ini |
 | – | Kode | `kode/` (`latih_bandingkan.py` menjalankan E1–E3) |
 
 ---
 
-## 1. Lingkup Persepsi dan Pipeline
+## 3. Lingkup Persepsi dan Pipeline
 
 - **Misi:** memberi status per orang untuk tiga item APD: *sudah / belum / tidak terlihat*.
 - **Kamera dan perangkat:** webcam Logitech C270 (640×480) ke Raspberry Pi 5, hanya vision.
-- **Target kinerja (dokumen desain):** `[ISI: salin target mAP / FPS / latensi dari dokumen desain minggu 3]`
 
 ```mermaid
 flowchart LR
@@ -67,14 +66,14 @@ Eksperimen E1–E3 melatih **detektor APD** (komponen inti), bukan keseluruhan p
 
 ---
 
-## 2. Data (Tahap 1–2)
+## 4. Data (Tahap 1–2)
 
-### Data sendiri
+### 4.1 Data sendiri
 
 200 foto dari webcam C270, dilabeli kotak YOLO untuk 3 kelas dengan `kode/label_tool.py`.
 
 | Kondisi | Jumlah foto |
-|---------|-------------|
+|---------|:-----------:|
 | Masker | 50 |
 | Kacamata | 50 |
 | Kacamata hitam + masker | 50 |
@@ -82,27 +81,24 @@ Eksperimen E1–E3 melatih **detektor APD** (komponen inti), bukan keseluruhan p
 
 - Pembagian: **140 train · 40 val · 20 test**.
 - Pembagian dibuat **berurutan menurut waktu per kondisi** (`make_dataset.py`), bukan acak, agar foto beruntun yang hampir kembar tidak bocor dari train ke val/test.
--  Foto sendiri **belum memuat sarung tangan**; kelas itu dipelajari model hanya dari data publik.
-
-**Contoh foto data sendiri (split test):**
+- Foto sendiri **belum memuat sarung tangan**; kelas itu dipelajari model hanya dari data publik.
 
 | Masker saja | Kacamata saja | Kacamata hitam + masker | Tanpa APD |
 |:-----------:|:-------------:|:-----------------------:|:---------:|
 | <img src="data_projek/dataset_sendiri/images/test/masker_saja_20261025_104948_272_0046.jpg" width="200"> | <img src="data_projek/dataset_sendiri/images/test/kacamata_saja_20261025_104853_223_0048.jpg" width="200"> | <img src="data_projek/dataset_sendiri/images/test/kacamata_hitam_masker_20261025_104737_741_0047.jpg" width="200"> | <img src="data_projek/dataset_sendiri/images/test/tanpa_apd_20261025_105041_266_0048.jpg" width="200"> |
 
-*Gambar 2.1 Contoh foto webcam Logitech C270 untuk keempat kondisi.*
+*Gambar 4.1 Contoh foto webcam Logitech C270 untuk keempat kondisi (split test).*
 
-### Data publik (pelengkap)
+### 4.2 Data publik (pelengkap)
 
-- Dataset PPE format YOLOv8 (`PPE Detection_DATA.v3-ppe_dataset_6-class`), diunduh dari Hugging Face `Nexus3/yolov8n-ppe-detection-6classes`.
+- Dataset PPE format YOLOv8 (`PPE Detection_DATA.v3-ppe_dataset_6-class`), diunduh dari Hugging Face `Nexus3/yolov8n-ppe-detection-6classes`. Ketentuan lisensi mengikuti halaman dataset tersebut.
 - Kelas dipetakan ke tiga kelas kita dengan `kode/remap_public.py` (kelas lain dibuang): **3507 gambar train** dan **804 gambar val**.
 - Data publik **tidak disertakan** di repositori ini.
-- `[ISI: sumber asli dan lisensi dataset setelah dicek di halaman unduhannya]`
 
-### Dataset yang dipakai eksperimen (`data_gabungan.yaml`)
+### 4.3 Dataset yang dipakai eksperimen (`data_gabungan.yaml`)
 
 | Split | Komposisi | Jumlah gambar |
-|-------|-----------|---------------|
+|-------|-----------|:-------------:|
 | train | data publik + foto sendiri **diulang 10×** | – |
 | val | 40 foto sendiri + 804 publik | 844 |
 | test | 20 foto sendiri | 20 |
@@ -111,7 +107,7 @@ Sidik jari label: `c155653c2c4f` (4511 gambar, 4511 file label).
 
 ---
 
-## 3. Eksperimen (Tahap 3)
+## 5. Eksperimen (Tahap 3)
 
 Ketiganya memakai data, epoch (30), batch (16), seed (0), dan augmentasi bawaan yang sama; **hanya satu faktor yang berbeda**. GPU Tesla T4 (Google Colab), Ultralytics 8.4.189.
 
@@ -123,37 +119,7 @@ Ketiganya memakai data, epoch (30), batch (16), seed (0), dan augmentasi bawaan 
 
 Angka mentah per epoch ada di `results.csv`, dan pengaturan lengkap di `args.yaml` pada tiap folder eksperimen.
 
-### Grafik latihan
-
-Setiap grafik memuat loss latih/val, precision, recall, mAP50, dan mAP50-95 per epoch (garis oranye putus-putus = kurva halus).
-
-**E1_pretrained** (baseline, bobot COCO, `imgsz=416`)
-
-![Grafik latihan E1](hasil/E1_pretrained/results.png)
-
-*Gambar 3.1 Grafik latihan E1_pretrained.*
-
-**E2_scratch** (bobot acak, `imgsz=416`)
-
-![Grafik latihan E2](hasil/E2_scratch/results.png)
-
-*Gambar 3.2 Grafik latihan E2_scratch. Kurva mulai dari hampir nol dan masih naik di epoch 30.*
-
-**E3_tuning** (bobot COCO, `imgsz=640`)
-
-![Grafik latihan E3](hasil/E3_tuning/results.png)
-
-*Gambar 3.3 Grafik latihan E3_tuning. mAP50-95 masih naik di epoch terakhir, yang menandakan model belum konvergen.*
-
-### Matriks kebingungan (data val, ternormalisasi)
-
-| E1_pretrained | E2_scratch | E3_tuning |
-|:-------------:|:----------:|:---------:|
-| <img src="hasil/E1_pretrained/confusion_matrix_normalized.png" width="300"> | <img src="hasil/E2_scratch/confusion_matrix_normalized.png" width="300"> | <img src="hasil/E3_tuning/confusion_matrix_normalized.png" width="300"> |
-
-*Gambar 3.4 Matriks kebingungan ternormalisasi E1, E2, dan E3. Versi jumlah mentah ada di `confusion_matrix.png` pada tiap folder.*
-
-### Hasil per kelas (data val)
+### 5.1 Hasil per kelas (data val)
 
 | Kelas | E1 mAP50 | E1 mAP50-95 | E2 mAP50 | E2 mAP50-95 | E3 mAP50 | E3 mAP50-95 |
 |-------|:--------:|:-----------:|:--------:|:-----------:|:--------:|:-----------:|
@@ -161,9 +127,39 @@ Setiap grafik memuat loss latih/val, precision, recall, mAP50, dan mAP50-95 per 
 | `glasses` | **0.926** | 0.502 | 0.790 | 0.409 | 0.911 | **0.506** |
 | `gloves` | 0.723 | 0.523 | 0.480 | 0.336 | **0.724** | **0.544** |
 
+### 5.2 Grafik latihan
+
+Setiap grafik memuat loss latih/val, precision, recall, mAP50, dan mAP50-95 per epoch (garis oranye putus-putus = kurva halus).
+
+**E1_pretrained** (baseline, bobot COCO, `imgsz=416`)
+
+![Grafik latihan E1](hasil/E1_pretrained/results.png)
+
+*Gambar 5.1 Grafik latihan E1_pretrained.*
+
+**E2_scratch** (bobot acak, `imgsz=416`)
+
+![Grafik latihan E2](hasil/E2_scratch/results.png)
+
+*Gambar 5.2 Grafik latihan E2_scratch. Kurva mulai dari hampir nol dan masih naik di epoch 30.*
+
+**E3_tuning** (bobot COCO, `imgsz=640`)
+
+![Grafik latihan E3](hasil/E3_tuning/results.png)
+
+*Gambar 5.3 Grafik latihan E3_tuning. mAP50-95 masih naik di epoch terakhir, yang menandakan model belum konvergen.*
+
+### 5.3 Matriks kebingungan (data val, ternormalisasi)
+
+| E1_pretrained | E2_scratch | E3_tuning |
+|:-------------:|:----------:|:---------:|
+| <img src="hasil/E1_pretrained/confusion_matrix_normalized.png" width="300"> | <img src="hasil/E2_scratch/confusion_matrix_normalized.png" width="300"> | <img src="hasil/E3_tuning/confusion_matrix_normalized.png" width="300"> |
+
+*Gambar 5.4 Matriks kebingungan ternormalisasi E1, E2, dan E3. Versi jumlah mentah ada di `confusion_matrix.png` pada tiap folder.*
+
 ---
 
-## 4. Pemilihan Model dan Hasil Test (Tahap 4–5)
+## 6. Pemilihan Model dan Hasil Test (Tahap 4–5)
 
 Model dipilih dari **mAP50-95 val tertinggi**, yaitu **E3_tuning (0.504)**. Data test dipakai **sekali** pada model tersebut.
 
@@ -183,37 +179,37 @@ Data test berisi 5 foto per kondisi, termasuk 5 foto **kacamata hitam + masker**
 |:----------------------------:|:------------------------------------:|
 | <img src="hasil/test_terpilih/confusion_matrix.png" width="380"> | <img src="hasil/test_terpilih/confusion_matrix_normalized.png" width="380"> |
 
-*Gambar 4.1 Matriks kebingungan model E3_tuning pada data test (`hasil/test_terpilih/`).*
+*Gambar 6.1 Matriks kebingungan model E3_tuning pada data test (`hasil/test_terpilih/`).*
 
 ---
 
-## 5. Analisis (Tahap 6)
+## 7. Analisis (Tahap 6)
 
-### 🔹 E1 vs E2 — manfaat transfer learning
+### 7.1 E1 vs E2 — manfaat transfer learning
 
 Pada epoch yang sama, E1 mencapai mAP50-95 **0.491** sedangkan E2 hanya **0.338** (mAP50 0.824 vs 0.627). Kurva E2 mulai dari hampir nol (0.007 pada epoch 1, sedangkan E1 sudah 0.303) dan masih naik di epoch 30. Bobot COCO memberi pengetahuan awal tentang tepi, bentuk, dan orang, sehingga data kita yang kecil cukup untuk menyesuaikannya. Selisih terbesar ada pada kelas tersulit: sarung tangan (mAP50 0.723 vs 0.480) dan masker (0.823 vs 0.610).
 
-### 🔹 E1 vs E3 — satu langkah tuning (`imgsz` 416 → 640)
+### 7.2 E1 vs E3 — satu langkah tuning (`imgsz` 416 → 640)
 
 E3 menang tipis pada kriteria pemilihan (mAP50-95 0.504 vs 0.491, selisih 0.013), tetapi mAP50 justru sedikit turun (0.819 vs 0.824) dan waktu inferensi naik sekitar **1,9×** (4.6 ms vs 2.4 ms di T4). Karena hanya satu percobaan dengan satu seed, selisih sebesar itu **belum cukup untuk disebut peningkatan yang nyata**.
 
 Gambar yang lebih besar membantu presisi (P 0.879 vs 0.863), terutama untuk masker (P 0.938 vs 0.908), tetapi recall turun sedikit (0.744 vs 0.760).
 
->  Untuk Raspberry Pi yang hanya CPU, kenaikan waktu hitung dua kali lipat itu mahal. **Jika latensi di Pi menjadi batas, E1 pada 416 adalah pilihan yang masuk akal meskipun aturan pemilihan menghasilkan E3.**
+> Untuk Raspberry Pi yang hanya CPU, kenaikan waktu hitung dua kali lipat itu mahal. **Jika latensi di Pi menjadi batas, E1 pada 416 adalah pilihan yang masuk akal meskipun aturan pemilihan menghasilkan E3.**
 
-### 🔹 Kelas yang lemah
+### 7.3 Kelas yang lemah
 
 Berdasarkan matriks kebingungan E3 (data val):
 
 | Temuan | Nilai |
-|--------|-------|
+|--------|:-----:|
 | Kacamata terdeteksi | ≈ 97% |
 | Masker terlewat | ≈ 11% |
 | Porsi `gloves` dari seluruh alarm palsu | ≈ 57% |
 
 Alarm palsu sarung tangan wajar terjadi karena objek ini mudah mirip tangan, lengan baju, atau benda berwarna gelap. Pada pengamatan langsung sebelumnya (model dari data publik saja), kacamata hitam yang dipakai bersama masker sering tidak terdeteksi; foto sendiri ditambahkan untuk memperbaikinya.
 
-### 🔹 Batasan dan hal yang tidak boleh disimpulkan berlebihan
+### 7.4 Batasan dan hal yang tidak boleh disimpulkan berlebihan
 
 1. **Angka test (mAP50 0.995) terlalu optimistis.** Hanya 20 foto (10 masker, 10 kacamata), diambil dari kamera dan sesi yang sama dengan foto latih. Angka val (mAP50-95 0.504) lebih mencerminkan kinerja umum.
 2. **Data test tidak memuat sarung tangan**, sehingga kinerjanya di data test tidak dapat dilaporkan.
@@ -222,31 +218,21 @@ Alarm palsu sarung tangan wajar terjadi karena objek ini mudah mirip tangan, len
 5. Foto sendiri **diulang 10×** di train; ini menaikkan bobot data kamera kita tetapi berisiko menghafal foto-foto tersebut.
 6. Data kecil: 200 foto sendiri dan belum ada foto sarung tangan sendiri.
 
-### 🔹 Langkah perbaikan berikutnya
+---
 
-- [ ] Menambah foto sarung tangan dan foto di pencahayaan/latar berbeda ke data test.
-- [ ] Melatih lebih dari 30 epoch dengan beberapa seed.
-- [ ] Mengekspor model ke NCNN untuk menaikkan FPS di Raspberry Pi.
+## 8. Pengembangan Lanjutan
+
+Pengujian langsung di Raspberry Pi 5 belum dilakukan pada tahap ini dan direncanakan sebagai kelanjutan projek. Rencana perbaikan berikutnya:
+
+- Menambah foto sarung tangan dan foto di pencahayaan serta latar berbeda ke data test.
+- Melatih lebih dari 30 epoch dengan beberapa seed.
+- Mengekspor model ke NCNN, lalu mengukur FPS dan hasil deteksi di Raspberry Pi pada empat kondisi: masker saja, kacamata biasa, kacamata hitam + masker, dan tanpa APD (perintahnya ada di [bagian 9.8](#98-opsional-ekspor-ncnn-dan-jalankan-di-raspberry-pi)).
 
 ---
 
-## 6. Uji di Raspberry Pi
+## 9. Cara Menjalankan Ulang
 
->  **Belum dilakukan.**
-> `[ISI setelah uji langsung: FPS, hasil kondisi masker saja / kacamata biasa / kacamata hitam + masker / tanpa APD, dan catatan salah deteksi]`
-
-| Kondisi uji | FPS | Hasil deteksi | Catatan salah deteksi |
-|-------------|-----|---------------|-----------------------|
-| Masker saja | `[ISI]` | `[ISI]` | `[ISI]` |
-| Kacamata biasa | `[ISI]` | `[ISI]` | `[ISI]` |
-| Kacamata hitam + masker | `[ISI]` | `[ISI]` | `[ISI]` |
-| Tanpa APD | `[ISI]` | `[ISI]` | `[ISI]` |
-
----
-
-## 7. Cara Menjalankan Ulang
-
-### 7.1 Prasyarat
+### 9.1 Prasyarat
 
 | Kebutuhan | Keterangan |
 |-----------|------------|
@@ -255,7 +241,7 @@ Alarm palsu sarung tangan wajar terjadi karena objek ini mudah mirip tangan, len
 | Paket | `ultralytics` dan `lapx` (lihat `kode/requirements.txt`) |
 | Raspberry Pi OS | `opencv` dan `picamera2` sebaiknya dari `apt`, bukan `pip` |
 
-### 7.2 Siapkan lingkungan
+### 9.2 Siapkan lingkungan
 
 ```bash
 # 1) Salin repositori dan masuk ke foldernya
@@ -276,7 +262,7 @@ pip install -r kode/requirements.txt
 | `python3 -m venv .venv` | Membuat lingkungan Python terisolasi | Folder `.venv/` terbentuk |
 | `pip install -r kode/requirements.txt` | Memasang `ultralytics` dan `lapx` | Paket terpasang tanpa galat |
 
-### 7.3 Ambil dan beri label data sendiri (Tahap 1–2)
+### 9.3 Ambil dan beri label data sendiri (Tahap 1–2)
 
 ```bash
 # Ambil foto dari webcam: otomatis tiap 1 detik, penanda kondisi masuk ke nama file
@@ -292,7 +278,7 @@ python kode/label_tool.py --dir dataset_raw
 | `--tag` | Penanda kondisi (mis. `masker_saja`, `kacamata_saja`, `kacamata_hitam_masker`, `tanpa_apd`) |
 | `label_tool.py --dir` | Membuka alat pelabelan YOLO untuk semua foto di folder |
 
-### 7.4 Susun dataset
+### 9.4 Susun dataset
 
 Data publik **tidak ada di repositori**. Unduh dan ekstrak sendiri dari Hugging Face (`Nexus3/yolov8n-ppe-detection-6classes`), lalu:
 
@@ -309,7 +295,7 @@ python kode/make_dataset.py --src dataset_raw --out dataset \
 
 > **Catatan:** pengulangan foto sendiri 10× dan penyusunan `data_gabungan.yaml` (val = 40 foto sendiri + 804 publik) dibuat saat percobaan di Colab. Lihat `kode/make_dataset.py --help` untuk opsi yang tersedia.
 
-### 7.5 Latih dan bandingkan E1–E3 (Tahap 3)
+### 9.5 Latih dan bandingkan E1–E3 (Tahap 3)
 
 ```bash
 python kode/latih_bandingkan.py \
@@ -342,9 +328,9 @@ hasil_praktik/
 └── E3_tuning/
 ```
 
-> Berkas bobot (`weights/best.pt`) **tidak ikut di repositori**; berkas itu dihasilkan saat pelatihan dan perlu disalin sendiri dari folder `hasil_praktik/` ke komputer atau Raspberry Pi.
+> Berkas bobot (`weights/best.pt`) **tidak ikut di repositori**; berkas itu dihasilkan saat pelatihan dan perlu disalin sendiri dari folder `hasil_praktik/`.
 
-### 7.6 Uji model terpilih pada data test (Tahap 4–5)
+### 9.6 Uji model terpilih pada data test (Tahap 4–5)
 
 Data test hanya dipakai **sekali**, pada model terbaik (E3).
 
@@ -365,7 +351,7 @@ yolo detect val \
 
 **Keluaran yang diharapkan:** mAP50 **0.995**, mAP50-95 **0.796**, P **1.000**, R **1.000** (mask 0.864, glasses 0.729; tanpa contoh `gloves`).
 
-### 7.7 Jalankan tes otomatis
+### 9.7 Jalankan tes otomatis
 
 ```bash
 python -m unittest discover -s kode/tests -v
@@ -373,7 +359,7 @@ python -m unittest discover -s kode/tests -v
 
 Perintah ini menjalankan tes pembagian dataset, geometri wajah/tangan, logika status APD, dan alat label di `kode/tests/`. Keluaran yang diharapkan adalah daftar tes berstatus `ok` dan baris akhir `OK`.
 
-### 7.8 Ekspor ke NCNN dan jalankan di Raspberry Pi
+### 9.8 (Opsional) Ekspor NCNN dan jalankan di Raspberry Pi
 
 Jalankan **di Raspberry Pi**:
 
@@ -395,16 +381,8 @@ python kode/detect.py --model best_ncnn_model --source 0 --imgsz 416
 | Perintah | Fungsi |
 |----------|--------|
 | `export_ncnn.py <bobot> --imgsz N` | Mengubah `.pt` menjadi folder `*_ncnn_model/` yang lebih cepat di CPU Pi |
-| `detect_smart.py` | Pose menemukan wajah dan tangan, lalu model APD dijalankan di potongannya, dengan status SUDAH / BELUM / TIDAK TERLIHAT / MEMERIKSA |
+| `detect_smart.py` | Pose menemukan wajah dan tangan, lalu model APD dijalankan di potongannya; status SUDAH / BELUM / TIDAK TERLIHAT / MEMERIKSA |
 | `detect.py` | Satu model pada frame penuh; `--require` memilih APD wajib, `--headless` untuk SSH |
 | `--source` | `picam` (kamera Pi), angka (`0` = webcam), atau path video |
 
-Ukur FPS di Raspberry Pi, lalu isi [bagian 6](#6-uji-di-raspberry-pi). Penjelasan sistem lengkap: [`kode/README_sistem.md`](kode/README_sistem.md).
-
----
-
-##  Lampiran: Daftar Isian yang Masih Kosong
-
-- [ ] Target kinerja dari dokumen desain minggu 3 (bagian 1)
-- [ ] Sumber asli dan lisensi dataset publik (bagian 2)
-- [ ] Hasil uji di Raspberry Pi (bagian 6)
+FPS tampil di pojok kanan atas jendela deteksi. Penjelasan sistem lengkap: [`kode/README_sistem.md`](kode/README_sistem.md).
