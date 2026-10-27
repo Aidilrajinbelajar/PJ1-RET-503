@@ -17,7 +17,7 @@ Sistem ini memeriksa apakah seseorang memakai **masker (`mask`)**, **kacamata (`
 5. [Eksperimen (Tahap 3)](#5-eksperimen-tahap-3)
 6. [Pemilihan Model dan Hasil Test (Tahap 4–5)](#6-pemilihan-model-dan-hasil-test-tahap-45)
 7. [Analisis (Tahap 6)](#7-analisis-tahap-6)
-8. [Pengembangan Lanjutan](#8-pengembangan-lanjutan)
+8. [Uji di Raspberry Pi dan Pengembangan Lanjutan](#8-uji-di-raspberry-pi-dan-pengembangan-lanjutan)
 9. [Cara Menjalankan Ulang](#9-cara-menjalankan-ulang)
 
 ---
@@ -31,6 +31,7 @@ Sistem ini memeriksa apakah seseorang memakai **masker (`mask`)**, **kacamata (`
 | mAP50 (test) | 0.995 | Hanya 20 foto, cenderung optimistis |
 | mAP50-95 (test) | 0.796 | Tanpa kelas `gloves` |
 | Manfaat transfer learning | **+0.153** mAP50-95 (E1 0.491 vs E2 0.338) | Bobot COCO sangat membantu |
+| Uji Raspberry Pi 5 (E3) | **8/8 status benar**, rata-rata **±5,0 FPS** | Uji cepat: satu orang, satu sesi, 100 frame per kondisi |
 | Biaya `imgsz` 640 | **±1,9× lebih lambat** (4.6 ms vs 2.4 ms di T4) | Untuk selisih mAP50-95 hanya 0.013 |
 
 > **Catatan:** angka test sangat tinggi karena datanya kecil dan berasal dari sesi kamera yang sama dengan data latih. Gunakan angka **val** sebagai acuan kinerja umum.
@@ -44,6 +45,7 @@ Sistem ini memeriksa apakah seseorang memakai **masker (`mask`)**, **kacamata (`
 | 1–2 | Data projek mahasiswa | `data_projek/` (foto webcam sendiri, label YOLO, `data.yaml`, statistik) dan bagian [Data](#4-data-tahap-12) |
 | 3 | Hasil E1 dan E3, `results.png` kedua eksperimen | `hasil/E1_pretrained/`, `hasil/E3_tuning/` (E2 di `hasil/E2_scratch/`) |
 | 4–6 | `hasil_praktik_Cluster 7.txt/.csv`, analisis, hasil test | `hasil_praktik_Cluster 7.txt`, `.csv`, dan README ini |
+| – | Hasil uji Raspberry Pi 5 | `hasil_uji_pi/` (`hasil_uji_pi_e3.txt/.csv` dan 4 foto hasil deteksi) |
 | – | Kode | `kode/` (`latih_bandingkan.py` menjalankan E1–E3) |
 
 ---
@@ -220,13 +222,63 @@ Alarm palsu sarung tangan wajar terjadi karena objek ini mudah mirip tangan, len
 
 ---
 
-## 8. Pengembangan Lanjutan
+## 8. Uji di Raspberry Pi dan Pengembangan Lanjutan
 
-Pengujian langsung di Raspberry Pi 5 belum dilakukan pada tahap ini dan direncanakan sebagai kelanjutan projek. Rencana perbaikan berikutnya:
+### 8.1 Uji langsung di Raspberry Pi 5
 
-- Menambah foto sarung tangan dan foto di pencahayaan serta latar berbeda ke data test.
+Model terpilih (E3_tuning, berkas `ppe_e3.pt`) diuji pada Raspberry Pi 5 dengan pipeline pose + crop wajah/tangan ([bagian 3](#3-lingkup-persepsi-dan-pipeline)). Satu orang diminta memperagakan empat kondisi, masing-masing diukur selama 100 frame (20 frame pemanasan dibuang).
+
+| Pengaturan | Nilai |
+|------------|-------|
+| Perangkat | Raspberry Pi 5, Linux 6.18 aarch64 |
+| Pustaka | Ultralytics 8.4.185 |
+| Model | `ppe_e3.pt` (tag `e3`) |
+| `pose-imgsz` / `crop-imgsz` | 320 / 320 |
+| Ambang keyakinan (`conf`) | 0.25 |
+| Frame per kondisi | 100 (20 frame pemanasan dibuang) |
+| Waktu uji | 27 Oktober 2026, 17:58 |
+
+**Hasil per kondisi** (`hasil_uji_pi/hasil_uji_pi_e3.txt` dan `.csv`):
+
+| Kondisi | Item | Dipakai | Benar | Salah | Ragu | FPS |
+|---------|------|:-------:|:-----:|:-----:|:----:|:---:|
+| Tanpa APD | `mask` | tidak | 100% | 0% | 0% | 4.9 |
+| Tanpa APD | `glasses` | tidak | 100% | 0% | 0% | 4.9 |
+| Masker saja | `mask` | ya | 100% | 0% | 0% | 5.0 |
+| Masker saja | `glasses` | tidak | 100% | 0% | 0% | 5.0 |
+| Kacamata biasa saja | `mask` | tidak | 100% | 0% | 0% | 4.9 |
+| Kacamata biasa saja | `glasses` | ya | 100% | 0% | 0% | 4.9 |
+| Kacamata hitam + masker | `mask` | ya | 100% | 0% | 0% | 5.0 |
+| Kacamata hitam + masker | `glasses` | ya | 100% | 0% | 0% | 5.0 |
+| **Rata-rata** | | | **100%** | **0%** | **0%** | **5.0** |
+
+*Benar* berarti status sesuai kenyataan, *Salah* berarti kebalikannya, dan *Ragu* berarti status "tidak terlihat", "memeriksa", atau tidak ada orang.
+
+| Tanpa APD | Masker saja | Kacamata saja | Kacamata hitam + masker |
+|:---------:|:-----------:|:-------------:|:-----------------------:|
+| <img src="hasil_uji_pi/uji_e3_1_tanpa_apd.jpg" width="200"> | <img src="hasil_uji_pi/uji_e3_2_masker.jpg" width="200"> | <img src="hasil_uji_pi/uji_e3_3_kacamata.jpg" width="200"> | <img src="hasil_uji_pi/uji_e3_4_kacahitam_masker.jpg" width="200"> |
+
+*Gambar 8.1 Tampilan hasil deteksi di Raspberry Pi untuk empat kondisi uji. Pada kondisi lengkap, status ditampilkan hijau ("LENGKAP - BOLEH MASUK"); pada kondisi tanpa APD, status ditampilkan merah ("APD BELUM LENGKAP").*
+
+**Pembahasan.**
+
+1. **Kasus yang dulu gagal sudah teratasi.** Kacamata hitam yang dipakai bersama masker terdeteksi benar (kacamata 0.79, masker 0.89 pada foto uji). Ini sesuai tujuan penambahan foto sendiri ke data latih.
+2. **Kecepatan sekitar 5 FPS** pada Raspberry Pi 5 untuk pipeline pose + detektor APD dengan model PyTorch (`.pt`). Angka ini cukup untuk pemeriksaan di pintu masuk (orang berdiri diam di depan kamera), tetapi belum nyaman untuk video mengalir. Ekspor ke NCNN ([bagian 9.8](#98-opsional-ekspor-ncnn-dan-jalankan-di-raspberry-pi)) adalah langkah berikutnya untuk menaikkan FPS.
+3. **E3 dilatih di `imgsz=640` tetapi dijalankan di 320** pada potongan wajah. Hasil tetap benar pada uji ini, tetapi kombinasi ukuran lain belum dibandingkan.
+
+**Batasan uji ini:**
+
+- Hanya **satu orang, satu sesi, dan satu latar**, dengan 100 frame per kondisi yang berurutan. Frame berurutan hampir identik, sehingga angka 100% tidak berarti peluang salah deteksi nol pada kondisi lain.
+- Hanya item **`mask` dan `glasses`** yang diuji; **`gloves` belum diuji** di Pi.
+- Pencahayaan, jarak, sudut wajah, dan lebih dari satu orang belum divariasikan.
+- Skrip penguji yang menghasilkan berkas ini belum ada di folder `kode/`. Tambahkan jika ingin pengujian dapat diulang.
+
+### 8.2 Pengembangan lanjutan
+
+- Menambah foto sarung tangan dan foto di pencahayaan serta latar berbeda ke data test, lalu mengujinya juga di Raspberry Pi.
+- Menguji dengan lebih banyak orang, jarak, dan sudut wajah.
 - Melatih lebih dari 30 epoch dengan beberapa seed.
-- Mengekspor model ke NCNN, lalu mengukur FPS dan hasil deteksi di Raspberry Pi pada empat kondisi: masker saja, kacamata biasa, kacamata hitam + masker, dan tanpa APD (perintahnya ada di [bagian 9.8](#98-opsional-ekspor-ncnn-dan-jalankan-di-raspberry-pi)).
+- Mengekspor model ke NCNN dan membandingkan FPS-nya dengan hasil 5,0 FPS di atas.
 
 ---
 
