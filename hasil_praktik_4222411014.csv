@@ -1,5 +1,5 @@
-nim,nama,waktu,komputer,sidik_jari_label,eksperimen,perubahan,mAP50,mAP50-95,P,R,ms_per_gambar,menit,model_terpilih,split
-4222411014/4222411030,Yasin Aprian/Raja Muhammad Aidilsyah,2026-10-26 09:17:56,16c1dde243eb | Linux-6.6.122+-x86_64-with-glibc2.39 | ultralytics 8.4.189,c155653c2c4f,E1_pretrained,-,0.8239,0.4911,0.8635,0.7598,2.36,29.91,False,val
-4222411014/4222411030,Yasin Aprian/Raja Muhammad Aidilsyah,2026-10-26 09:17:56,16c1dde243eb | Linux-6.6.122+-x86_64-with-glibc2.39 | ultralytics 8.4.189,c155653c2c4f,E2_scratch,-,0.6265,0.3376,0.7458,0.5697,2.05,29.71,False,val
-4222411014/4222411030,Yasin Aprian/Raja Muhammad Aidilsyah,2026-10-26 09:17:56,16c1dde243eb | Linux-6.6.122+-x86_64-with-glibc2.39 | ultralytics 8.4.189,c155653c2c4f,E3_tuning,imgsz=640,0.8187,0.5035,0.8786,0.7438,4.56,39.88,True,val
-4222411014/4222411030,Yasin Aprian/Raja Muhammad Aidilsyah,2026-10-26 09:17:56,16c1dde243eb | Linux-6.6.122+-x86_64-with-glibc2.39 | ultralytics 8.4.189,c155653c2c4f,E3_tuning,imgsz=640,0.9950,0.7965,1.0000,1.0000,22.70,,True,test
+nama,waktu,komputer,sidik_jari_label,eksperimen,perubahan,mAP50,mAP50-95,P,R,ms_per_gambar,menit,model_terpilih,split
+Cluster 7,2026-10-26 09:17:56,16c1dde243eb | Linux-6.6.122+-x86_64-with-glibc2.39 | ultralytics 8.4.189,c155653c2c4f,E1_pretrained,-,0.8239,0.4911,0.8635,0.7598,2.36,29.91,False,val
+Cluster 7,2026-10-26 09:17:56,16c1dde243eb | Linux-6.6.122+-x86_64-with-glibc2.39 | ultralytics 8.4.189,c155653c2c4f,E2_scratch,-,0.6265,0.3376,0.7458,0.5697,2.05,29.71,False,val
+Cluster 7,2026-10-26 09:17:56,16c1dde243eb | Linux-6.6.122+-x86_64-with-glibc2.39 | ultralytics 8.4.189,c155653c2c4f,E3_tuning,imgsz=640,0.8187,0.5035,0.8786,0.7438,4.56,39.88,True,val
+Cluster 7,2026-10-26 09:17:56,16c1dde243eb | Linux-6.6.122+-x86_64-with-glibc2.39 | ultralytics 8.4.189,c155653c2c4f,E3_tuning,imgsz=640,0.9950,0.7965,1.0000,1.0000,22.70,,True,test
