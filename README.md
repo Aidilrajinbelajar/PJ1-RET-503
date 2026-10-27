@@ -1,4 +1,4 @@
-# 🦺 Pj1 — Sistem Persepsi K3/APD
+#  Pj1 — Sistem Persepsi K3/APD
 
 **Deteksi masker, kacamata, dan sarung tangan dari kamera dengan YOLO**
 
@@ -8,7 +8,7 @@ Sistem ini memeriksa apakah seseorang memakai **masker (`mask`)**, **kacamata (`
 
 ---
 
-## 📑 Daftar Isi
+##  Daftar Isi
 
 1. [Ringkasan Hasil](#-ringkasan-hasil)
 2. [Isi Repositori](#-isi-repositori)
@@ -22,7 +22,7 @@ Sistem ini memeriksa apakah seseorang memakai **masker (`mask`)**, **kacamata (`
 
 ---
 
-## 🏆 Ringkasan Hasil
+##  Ringkasan Hasil
 
 | Indikator | Nilai | Keterangan |
 |-----------|-------|------------|
@@ -33,11 +33,11 @@ Sistem ini memeriksa apakah seseorang memakai **masker (`mask`)**, **kacamata (`
 | Manfaat transfer learning | **+0.153** mAP50-95 (E1 0.491 vs E2 0.338) | Bobot COCO sangat membantu |
 | Biaya `imgsz` 640 | **±1,9× lebih lambat** (4.6 ms vs 2.4 ms di T4) | Untuk selisih mAP50-95 hanya 0.013 |
 
-> ⚠️ **Catatan penting:** angka test sangat tinggi karena datanya kecil dan berasal dari sesi kamera yang sama dengan data latih. Gunakan angka **val** sebagai acuan kinerja umum.
+>  **Catatan penting:** angka test sangat tinggi karena datanya kecil dan berasal dari sesi kamera yang sama dengan data latih. Gunakan angka **val** sebagai acuan kinerja umum.
 
 ---
 
-## 📂 Isi Repositori
+##  Isi Repositori
 
 | Tahap | Yang dikumpulkan | Lokasi |
 |-------|------------------|--------|
@@ -82,7 +82,7 @@ Eksperimen E1–E3 melatih **detektor APD** (komponen inti), bukan keseluruhan p
 
 - Pembagian: **140 train · 40 val · 20 test**.
 - Pembagian dibuat **berurutan menurut waktu per kondisi** (`make_dataset.py`), bukan acak, agar foto beruntun yang hampir kembar tidak bocor dari train ke val/test.
-- ⚠️ Foto sendiri **belum memuat sarung tangan**; kelas itu dipelajari model hanya dari data publik.
+-  Foto sendiri **belum memuat sarung tangan**; kelas itu dipelajari model hanya dari data publik.
 
 **Contoh foto data sendiri (split test):**
 
@@ -199,7 +199,7 @@ E3 menang tipis pada kriteria pemilihan (mAP50-95 0.504 vs 0.491, selisih 0.013)
 
 Gambar yang lebih besar membantu presisi (P 0.879 vs 0.863), terutama untuk masker (P 0.938 vs 0.908), tetapi recall turun sedikit (0.744 vs 0.760).
 
-> 💡 Untuk Raspberry Pi yang hanya CPU, kenaikan waktu hitung dua kali lipat itu mahal. **Jika latensi di Pi menjadi batas, E1 pada 416 adalah pilihan yang masuk akal meskipun aturan pemilihan menghasilkan E3.**
+>  Untuk Raspberry Pi yang hanya CPU, kenaikan waktu hitung dua kali lipat itu mahal. **Jika latensi di Pi menjadi batas, E1 pada 416 adalah pilihan yang masuk akal meskipun aturan pemilihan menghasilkan E3.**
 
 ### 🔹 Kelas yang lemah
 
@@ -232,7 +232,7 @@ Alarm palsu sarung tangan wajar terjadi karena objek ini mudah mirip tangan, len
 
 ## 6. Uji di Raspberry Pi
 
-> 🚧 **Belum dilakukan.**
+>  **Belum dilakukan.**
 > `[ISI setelah uji langsung: FPS, hasil kondisi masker saja / kacamata biasa / kacamata hitam + masker / tanpa APD, dan catatan salah deteksi]`
 
 | Kondisi uji | FPS | Hasil deteksi | Catatan salah deteksi |
@@ -403,7 +403,7 @@ Ukur FPS di Raspberry Pi, lalu isi [bagian 6](#6-uji-di-raspberry-pi). Penjelasa
 
 ---
 
-## 📌 Lampiran: Daftar Isian yang Masih Kosong
+##  Lampiran: Daftar Isian yang Masih Kosong
 
 - [ ] Target kinerja dari dokumen desain minggu 3 (bagian 1)
 - [ ] Sumber asli dan lisensi dataset publik (bagian 2)
