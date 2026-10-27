@@ -1,4 +1,4 @@
-NIM / Nama    : 4222411014 / Yasin Aprian
+Team Cluster 7
 Waktu         : 2026-10-26 09:17:56
 Komputer      : 16c1dde243eb | Linux-6.6.122+-x86_64-with-glibc2.39 | ultralytics 8.4.189
 Dataset       : /content/data_gabungan.yaml  (sidik jari label: c155653c2c4f, 4511 gambar, 4511 file label)
