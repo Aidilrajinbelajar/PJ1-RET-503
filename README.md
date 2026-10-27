@@ -428,7 +428,7 @@ python kode/detect_smart.py \
 
 # Mode sederhana: satu model; webcam C270 = --source 0
 python kode/detect.py --model best_ncnn_model --source 0 --imgsz 416
-```
+```.
 
 | Perintah | Fungsi |
 |----------|--------|
