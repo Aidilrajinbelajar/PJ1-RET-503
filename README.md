@@ -1,6 +1,6 @@
 # Pj1 — Sistem Persepsi K3/APD (masker, kacamata, sarung tangan)
 
-Yasin Aprian · NIM 4222411014 · RET503 (Minggu 4–7)
+Team Cluster 7 · RET503 (Minggu 4–7)
 
 Sistem ini memeriksa apakah seseorang memakai **masker (mask)**, **kacamata (glasses)**, dan **sarung tangan (gloves)**
 dari kamera, dengan perangkat target Raspberry Pi 5 + webcam Logitech C270. Repositori ini memuat dataset projek,
@@ -12,7 +12,7 @@ tiga eksperimen YOLO (E1, E2, E3), hasilnya, dan analisisnya.
 |---|---|---|
 | 1–2 | Data projek mahasiswa | `data_projek/` (foto webcam sendiri + label YOLO + `data.yaml` + statistik), bagian "Data" di bawah |
 | 3 | Hasil E1 dan E3, `results.png` kedua eksperimen | `hasil/E1_pretrained/`, `hasil/E3_tuning/` (E2 ada di `hasil/E2_scratch/`) |
-| 4–6 | `hasil_praktik_4222411014.txt/.csv`, analisis, hasil test | `hasil_praktik_4222411014.txt`, `.csv`, dan README ini |
+| 4–6 | `hasil_praktik_Cluster 7.txt/.csv`, analisis, hasil test | `hasil_praktik_Cluster 7.txt`, `.csv`, dan README ini |
 | – | Kode | `kode/` (`latih_bandingkan.py` menjalankan E1–E3) |
 
 ## 1. Lingkup persepsi dan pipeline
