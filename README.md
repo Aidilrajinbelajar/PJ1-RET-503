@@ -1,6 +1,6 @@
 # Pj1 — Sistem Persepsi K3/APD
 
-**Deteksi masker, kacamata, dan sarung tangan dari kamera dengan YOLO**
+**Deteksi masker, kacamata, dari kamera dengan YOLO**
 
 `Team Cluster 7` · `RET503 (Minggu 4–7)` · `Raspberry Pi 5` · `Logitech C270` · `Ultralytics YOLO`
 
@@ -173,7 +173,6 @@ Model dipilih dari **mAP50-95 val tertinggi**, yaitu **E3_tuning (0.504)**. Data
 |-------|:---------------:|
 | `mask` | 0.864 |
 | `glasses` | 0.729 |
-| `gloves` | tidak ada contoh di data test |
 
 Data test berisi 5 foto per kondisi, termasuk 5 foto **kacamata hitam + masker** (kasus yang sebelumnya gagal). Rincian lengkap: `hasil_praktik_Cluster 7.txt` dan `hasil_praktik_Cluster 7.csv`.
 
