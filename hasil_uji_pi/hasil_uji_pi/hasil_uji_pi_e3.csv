@@ -1,9 +1,0 @@
-tag,waktu,kondisi,item,dipakai,frame,OK,MISSING,UNSEEN,CHECKING,NOPERSON,benar_pct,salah_pct,ragu_pct,fps
-e3,2026-10-27 17:58:11,1_tanpa_apd,mask,False,100,0,100,0,0,0,100.0,0.0,0.0,4.94
-e3,2026-10-27 17:58:11,1_tanpa_apd,glasses,False,100,0,100,0,0,0,100.0,0.0,0.0,4.94
-e3,2026-10-27 17:58:11,2_masker,mask,True,100,100,0,0,0,0,100.0,0.0,0.0,4.95
-e3,2026-10-27 17:58:11,2_masker,glasses,False,100,0,100,0,0,0,100.0,0.0,0.0,4.95
-e3,2026-10-27 17:58:11,3_kacamata,mask,False,100,0,100,0,0,0,100.0,0.0,0.0,4.90
-e3,2026-10-27 17:58:11,3_kacamata,glasses,True,100,100,0,0,0,0,100.0,0.0,0.0,4.90
-e3,2026-10-27 17:58:11,4_kacahitam_masker,mask,True,100,100,0,0,0,0,100.0,0.0,0.0,5.04
-e3,2026-10-27 17:58:11,4_kacahitam_masker,glasses,True,100,100,0,0,0,0,100.0,0.0,0.0,5.04
